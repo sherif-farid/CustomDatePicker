@@ -24,11 +24,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.InputType;
 import android.text.format.DateFormat;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -39,26 +39,27 @@ import android.widget.NumberPicker;
 import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Locale;
-import android.icu.util.IslamicCalendar;
-
-import androidx.annotation.RequiresApi;
 
 
 /**
  * A delegate implementing the basic DatePicker
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class DatePicker extends FrameLayout {
+public class MyDatePicker extends FrameLayout {
+
 
     private static final String DATE_FORMAT = "MM/dd/yyyy";
 
     private static final boolean DEFAULT_ENABLED_STATE = true;
 
     private LinearLayout mPickerContainer;
-    private TextView customTitleTv ;
 
     private NumberPicker mDaySpinner;
 
@@ -92,11 +93,39 @@ public class DatePicker extends FrameLayout {
     private boolean mIsEnabled = DEFAULT_ENABLED_STATE;
 
     private boolean mIsDayShown = true;
+
     private String tag = "DatePickerTag";
 
-    DatePicker(ViewGroup root, int numberPickerStyle) {
-        super(root.getContext());
-        mContext = root.getContext();
+    public MyDatePicker(@NonNull Context context) {
+        super(context);
+        initConstructor(context , 0);
+    }
+
+    public MyDatePicker(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        initConstructor(context , 0);
+
+    }
+
+    public MyDatePicker(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initConstructor(context , 0);
+    }
+
+    public MyDatePicker(@NonNull Context context,
+                        @Nullable AttributeSet attrs,
+                        int defStyleAttr,
+                        int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        initConstructor(context , 0);
+    }
+    MyDatePicker(Context context, int numberPickerStyle) {
+        super(context);
+        initConstructor(context, numberPickerStyle);
+    }
+
+    private void initConstructor(Context context, int numberPickerStyle){
+        mContext = context;
 
         // initialization based on locale
         setCurrentLocale(Locale.getDefault());
@@ -108,7 +137,6 @@ public class DatePicker extends FrameLayout {
         inflater.inflate(R.layout.date_picker_container, this, true);
 
         mPickerContainer = findViewById(R.id.parent);
-        customTitleTv =mPickerContainer.findViewById(R.id.customTitleTv);
 
         OnValueChangeListener onChangeListener = new OnValueChangeListener() {
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
@@ -116,30 +144,33 @@ public class DatePicker extends FrameLayout {
                 mTempDate.setTimeInMillis(mCurrentDate.getTimeInMillis());
                 // take care of wrapping of days and months to update greater fields
                 if (picker == mDaySpinner) {
-                    int maxDayOfMonth = mTempDate.getActualMaximum(IslamicCalendar.DAY_OF_MONTH);
+                    int maxDayOfMonth = mTempDate.getActualMaximum(Calendar.DAY_OF_MONTH);
                     if (oldVal == maxDayOfMonth && newVal == 1) {
-                        mTempDate.add(IslamicCalendar.DAY_OF_MONTH, 1);
+                        mTempDate.add(Calendar.DAY_OF_MONTH, 1);
                     } else if (oldVal == 1 && newVal == maxDayOfMonth) {
-                        mTempDate.add(IslamicCalendar.DAY_OF_MONTH, -1);
+                        mTempDate.add(Calendar.DAY_OF_MONTH, -1);
                     } else {
-                        mTempDate.add(IslamicCalendar.DAY_OF_MONTH, newVal - oldVal);
+                        mTempDate.add(Calendar.DAY_OF_MONTH, newVal - oldVal);
                     }
-                } else if (picker == mMonthSpinner) {
+                }
+                else if (picker == mMonthSpinner) {
                     if (oldVal == 11 && newVal == 0) {
-                        mTempDate.add(IslamicCalendar.MONTH, 1);
+                        mTempDate.add(Calendar.MONTH, 1);
                     } else if (oldVal == 0 && newVal == 11) {
-                        mTempDate.add(IslamicCalendar.MONTH, -1);
+                        mTempDate.add(Calendar.MONTH, -1);
                     } else {
-                        mTempDate.add(IslamicCalendar.MONTH, newVal - oldVal);
+                        mTempDate.add(Calendar.MONTH, newVal - oldVal);
                     }
-                } else if (picker == mYearSpinner) {
-                    mTempDate.set(IslamicCalendar.YEAR, newVal);
-                } else {
+                }
+                else if (picker == mYearSpinner) {
+                    mTempDate.set(Calendar.YEAR, newVal);
+                }
+                else {
                     throw new IllegalArgumentException();
                 }
                 // now set the date to the adjusted one
-                setDate(mTempDate.get(IslamicCalendar.YEAR), mTempDate.get(IslamicCalendar.MONTH),
-                        mTempDate.get(IslamicCalendar.DAY_OF_MONTH));
+                setDate(mTempDate.get(Calendar.YEAR), mTempDate.get(Calendar.MONTH),
+                        mTempDate.get(Calendar.DAY_OF_MONTH));
                 updateSpinners();
                 notifyDateChanged();
             }
@@ -147,7 +178,7 @@ public class DatePicker extends FrameLayout {
 
         // day
         mDaySpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_day_month,
-                                                      mPickerContainer, false);
+                mPickerContainer, false);
         mDaySpinner.setId(R.id.day);
         mDaySpinner.setFormatter(new TwoDigitFormatter());
         mDaySpinner.setOnLongPressUpdateInterval(100);
@@ -157,7 +188,7 @@ public class DatePicker extends FrameLayout {
 
         // month
         mMonthSpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_day_month,
-                                                        mPickerContainer, false);
+                mPickerContainer, false);
         mMonthSpinner.setId(R.id.month);
         mMonthSpinner.setMinValue(0);
         mMonthSpinner.setMaxValue(mNumberOfMonths - 1);
@@ -168,7 +199,7 @@ public class DatePicker extends FrameLayout {
 
         // year
         mYearSpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_year,
-                                                       mPickerContainer, false);
+                mPickerContainer, false);
         mYearSpinner.setId(R.id.year);
         mYearSpinner.setOnLongPressUpdateInterval(100);
         mYearSpinner.setOnValueChangedListener(onChangeListener);
@@ -185,10 +216,10 @@ public class DatePicker extends FrameLayout {
             setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         }
 
-        root.addView(this);
+//        root.addView(this);
     }
 
-    void init(int year, int monthOfYear, int dayOfMonth,
+    public void init(int year, int monthOfYear, int dayOfMonth,
               boolean isDayShown, OnDateChangedListener onDateChangedListener) {
         mIsDayShown = isDayShown;
         setDate(year, monthOfYear, dayOfMonth);
@@ -207,21 +238,21 @@ public class DatePicker extends FrameLayout {
     }
 
     int getYear() {
-        return mCurrentDate.get(IslamicCalendar.YEAR);
+        return mCurrentDate.get(Calendar.YEAR);
     }
 
     int getMonth() {
-        return mCurrentDate.get(IslamicCalendar.MONTH);
+        return mCurrentDate.get(Calendar.MONTH);
     }
 
     int getDayOfMonth() {
-        return mCurrentDate.get(IslamicCalendar.DAY_OF_MONTH);
+        return mCurrentDate.get(Calendar.DAY_OF_MONTH);
     }
 
-    void setMinDate(long minDate) {
+    public void setMinDate(long minDate) {
         mTempDate.setTimeInMillis(minDate);
-        if (mTempDate.get(IslamicCalendar.YEAR) == mMinDate.get(IslamicCalendar.YEAR)
-                && mTempDate.get(IslamicCalendar.DAY_OF_YEAR) == mMinDate.get(IslamicCalendar.DAY_OF_YEAR)) {
+        if (mTempDate.get(Calendar.YEAR) == mMinDate.get(Calendar.YEAR)
+                && mTempDate.get(Calendar.DAY_OF_YEAR) == mMinDate.get(Calendar.DAY_OF_YEAR)) {
             // Same day, no-op.
             return;
         }
@@ -232,10 +263,10 @@ public class DatePicker extends FrameLayout {
         updateSpinners();
     }
 
-    void setMaxDate(long maxDate) {
+    public void setMaxDate(long maxDate) {
         mTempDate.setTimeInMillis(maxDate);
-        if (mTempDate.get(IslamicCalendar.YEAR) == mMaxDate.get(IslamicCalendar.YEAR)
-                && mTempDate.get(IslamicCalendar.DAY_OF_YEAR) == mMaxDate.get(IslamicCalendar.DAY_OF_YEAR)) {
+        if (mTempDate.get(Calendar.YEAR) == mMaxDate.get(Calendar.YEAR)
+                && mTempDate.get(Calendar.DAY_OF_YEAR) == mMaxDate.get(Calendar.DAY_OF_YEAR)) {
             // Same day, no-op.
             return;
         }
@@ -281,7 +312,7 @@ public class DatePicker extends FrameLayout {
         mMaxDate = getCalendarForLocale(mMaxDate, locale);
         mCurrentDate = getCalendarForLocale(mCurrentDate, locale);
 
-        mNumberOfMonths = mTempDate.getActualMaximum(IslamicCalendar.MONTH) + 1;
+        mNumberOfMonths = mTempDate.getActualMaximum(Calendar.MONTH) + 1;
         mShortMonths = /*new DateFormatSymbols().getShortMonths();*/
         Utils.getSimpleDateFormat().getDateFormatSymbols().getShortMonths();
 
@@ -327,7 +358,6 @@ public class DatePicker extends FrameLayout {
      */
     private void reorderSpinners() {
         mPickerContainer.removeAllViews();
-        mPickerContainer.addView(customTitleTv);
         // We use numeric spinners for year and day, but textual months. Ask icu4c what
         // order the user's locale uses for that combination. http://b/7207103.
         String pattern = null;
@@ -380,9 +410,9 @@ public class DatePicker extends FrameLayout {
     }
 
     private boolean isNewDate(int year, int month, int dayOfMonth) {
-        return (mCurrentDate.get(IslamicCalendar.YEAR) != year
-                || mCurrentDate.get(IslamicCalendar.MONTH) != month
-                || mCurrentDate.get(IslamicCalendar.DAY_OF_MONTH) != dayOfMonth);
+        return (mCurrentDate.get(Calendar.YEAR) != year
+                || mCurrentDate.get(Calendar.MONTH) != month
+                || mCurrentDate.get(Calendar.DAY_OF_MONTH) != dayOfMonth);
     }
 
     private void setDate(int year, int month, int dayOfMonth) {
@@ -398,24 +428,24 @@ public class DatePicker extends FrameLayout {
         // set the spinner ranges respecting the min and max dates
         mDaySpinner.setVisibility(mIsDayShown ? View.VISIBLE : View.GONE);
         if (mCurrentDate.equals(mMinDate)) {
-            mDaySpinner.setMinValue(mCurrentDate.get(IslamicCalendar.DAY_OF_MONTH));
-            mDaySpinner.setMaxValue(mCurrentDate.getActualMaximum(IslamicCalendar.DAY_OF_MONTH));
+            mDaySpinner.setMinValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
+            mDaySpinner.setMaxValue(mCurrentDate.getActualMaximum(Calendar.DAY_OF_MONTH));
             mDaySpinner.setWrapSelectorWheel(false);
             mMonthSpinner.setDisplayedValues(null);
-            mMonthSpinner.setMinValue(mCurrentDate.get(IslamicCalendar.MONTH));
-            mMonthSpinner.setMaxValue(mCurrentDate.getActualMaximum(IslamicCalendar.MONTH));
+            mMonthSpinner.setMinValue(mCurrentDate.get(Calendar.MONTH));
+            mMonthSpinner.setMaxValue(mCurrentDate.getActualMaximum(Calendar.MONTH));
             mMonthSpinner.setWrapSelectorWheel(false);
         } else if (mCurrentDate.equals(mMaxDate)) {
-            mDaySpinner.setMinValue(mCurrentDate.getActualMinimum(IslamicCalendar.DAY_OF_MONTH));
-            mDaySpinner.setMaxValue(mCurrentDate.get(IslamicCalendar.DAY_OF_MONTH));
+            mDaySpinner.setMinValue(mCurrentDate.getActualMinimum(Calendar.DAY_OF_MONTH));
+            mDaySpinner.setMaxValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
             mDaySpinner.setWrapSelectorWheel(false);
             mMonthSpinner.setDisplayedValues(null);
-            mMonthSpinner.setMinValue(mCurrentDate.getActualMinimum(IslamicCalendar.MONTH));
-            mMonthSpinner.setMaxValue(mCurrentDate.get(IslamicCalendar.MONTH));
+            mMonthSpinner.setMinValue(mCurrentDate.getActualMinimum(Calendar.MONTH));
+            mMonthSpinner.setMaxValue(mCurrentDate.get(Calendar.MONTH));
             mMonthSpinner.setWrapSelectorWheel(false);
         } else {
             mDaySpinner.setMinValue(1);
-            mDaySpinner.setMaxValue(mCurrentDate.getActualMaximum(IslamicCalendar.DAY_OF_MONTH));
+            mDaySpinner.setMaxValue(mCurrentDate.getActualMaximum(Calendar.DAY_OF_MONTH));
             mDaySpinner.setWrapSelectorWheel(true);
             mMonthSpinner.setDisplayedValues(null);
             mMonthSpinner.setMinValue(0);
@@ -435,14 +465,14 @@ public class DatePicker extends FrameLayout {
         mMonthSpinner.setDisplayedValues(displayedValues);
 
         // year spinner range does not change based on the current date
-        mYearSpinner.setMinValue(mMinDate.get(IslamicCalendar.YEAR));
-        mYearSpinner.setMaxValue(mMaxDate.get(IslamicCalendar.YEAR));
+        mYearSpinner.setMinValue(mMinDate.get(Calendar.YEAR));
+        mYearSpinner.setMaxValue(mMaxDate.get(Calendar.YEAR));
         mYearSpinner.setWrapSelectorWheel(false);
 
         // set the spinner values
-        mYearSpinner.setValue(mCurrentDate.get(IslamicCalendar.YEAR));
-        mMonthSpinner.setValue(mCurrentDate.get(IslamicCalendar.MONTH));
-        mDaySpinner.setValue(mCurrentDate.get(IslamicCalendar.DAY_OF_MONTH));
+        mYearSpinner.setValue(mCurrentDate.get(Calendar.YEAR));
+        mMonthSpinner.setValue(mCurrentDate.get(Calendar.MONTH));
+        mDaySpinner.setValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
 
         if (usingNumericMonths()) {
             mMonthSpinnerInput.setRawInputType(InputType.TYPE_CLASS_NUMBER);
@@ -541,7 +571,7 @@ public class DatePicker extends FrameLayout {
         final boolean isDaySpinnerShown;
 
         /**
-         * Constructor called from {@link DatePicker#onSaveInstanceState()}
+         * Constructor called from {@link MyDatePicker#onSaveInstanceState()}
          */
         SavedState(Parcelable superState,
                    Calendar currentDate,

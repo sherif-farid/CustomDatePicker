@@ -13,5 +13,5 @@ public interface OnDateChangedListener {
      *                    with {@link java.util.Calendar}.
      * @param dayOfMonth  The day of the month that was set.
      */
-    void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth);
+    void onDateChanged(MyDatePicker view, int year, int monthOfYear, int dayOfMonth);
 }

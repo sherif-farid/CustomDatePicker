@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -28,7 +27,7 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
     private static final String TITLE_SHOWN = "title_enabled";
     private static final String CUSTOM_TITLE = "custom_title";
 
-    private final DatePicker mDatePicker;
+    private final MyDatePicker mMyDatePicker;
     private final OnDateSetListener mCallBack;
     private final OnDateCancelListener mOnCancel;
     private final SimpleDateFormat mTitleDateFormat;
@@ -48,7 +47,7 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
          *                    with {@link java.util.Calendar}.
          * @param dayOfMonth  The day of the month that was set.
          */
-        void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth);
+        void onDateSet(MyDatePicker view, int year, int monthOfYear, int dayOfMonth);
     }
 
     /**
@@ -60,7 +59,7 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
          *
          * @param view The view associated with this listener.
          */
-        void onCancelled(DatePicker view);
+        void onCancelled(MyDatePicker view);
     }
 
     DatePickerDialog(Context context,
@@ -94,10 +93,10 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.date_picker_dialog_container, null);
         setView(view);
-        mDatePicker = new DatePicker((ViewGroup) view, spinnerTheme);
-        mDatePicker.setMinDate(minDate.getTimeInMillis());
-        mDatePicker.setMaxDate(maxDate.getTimeInMillis());
-        mDatePicker.init(defaultDate.get(Calendar.YEAR),
+        mMyDatePicker = new MyDatePicker(view.getContext(), spinnerTheme);
+        mMyDatePicker.setMinDate(minDate.getTimeInMillis());
+        mMyDatePicker.setMaxDate(maxDate.getTimeInMillis());
+        mMyDatePicker.init(defaultDate.get(Calendar.YEAR),
                 defaultDate.get(Calendar.MONTH),
                 defaultDate.get(Calendar.DAY_OF_MONTH),
                 isDayShown, this);
@@ -109,16 +108,16 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
         switch (which) {
             case BUTTON_POSITIVE: {
                 if (mCallBack != null) {
-                    mDatePicker.clearFocus();
-                    mCallBack.onDateSet(mDatePicker, mDatePicker.getYear(),
-                            mDatePicker.getMonth(), mDatePicker.getDayOfMonth());
+                    mMyDatePicker.clearFocus();
+                    mCallBack.onDateSet(mMyDatePicker, mMyDatePicker.getYear(),
+                            mMyDatePicker.getMonth(), mMyDatePicker.getDayOfMonth());
                 }
                 break;
             }
             case BUTTON_NEGATIVE: {
                 if (mOnCancel != null) {
-                    mDatePicker.clearFocus();
-                    mOnCancel.onCancelled(mDatePicker);
+                    mMyDatePicker.clearFocus();
+                    mOnCancel.onCancelled(mMyDatePicker);
                 }
                 break;
             }
@@ -126,7 +125,7 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
     }
 
     @Override
-    public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+    public void onDateChanged(MyDatePicker view, int year, int monthOfYear, int dayOfMonth) {
         updateTitle(Utils.getCalendar(year , monthOfYear , dayOfMonth));
     }
 
@@ -144,9 +143,9 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
     @Override
     public Bundle onSaveInstanceState() {
         Bundle state = super.onSaveInstanceState();
-        state.putInt(YEAR, mDatePicker.getYear());
-        state.putInt(MONTH, mDatePicker.getMonth());
-        state.putInt(DAY, mDatePicker.getDayOfMonth());
+        state.putInt(YEAR, mMyDatePicker.getYear());
+        state.putInt(MONTH, mMyDatePicker.getMonth());
+        state.putInt(DAY, mMyDatePicker.getDayOfMonth());
         state.putBoolean(TITLE_SHOWN, mIsTitleShown);
         state.putString(CUSTOM_TITLE, mCustomTitle);
         return state;
@@ -161,6 +160,6 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
         mIsTitleShown = savedInstanceState.getBoolean(TITLE_SHOWN);
         mCustomTitle = savedInstanceState.getString(CUSTOM_TITLE);
         updateTitle(Utils.getCalendar(year , month , day));
-        mDatePicker.init(year, month, day, mIsDayShown, this);
+        mMyDatePicker.init(year, month, day, mIsDayShown, this);
     }
 }

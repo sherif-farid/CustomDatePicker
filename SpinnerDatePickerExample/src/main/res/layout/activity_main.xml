@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -13,6 +14,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="date goes here"
         android:textSize="22sp"
+        android:layout_margin="24dp"
         app:layout_constraintBottom_toTopOf="@+id/set_date_button"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
@@ -25,6 +27,23 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="24dp"
         android:text="Set date"/>
+    <TextView
+        android:id="@+id/dateTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="22sp"/>
+    <com.tsongkha.spinnerdatepicker.MyDatePicker
+        android:id="@+id/datePickerFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
+        android:minWidth="100dp"
+        android:layout_gravity="center_horizontal"
+        android:datePickerMode="spinner"
+        android:calendarViewShown="false"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
