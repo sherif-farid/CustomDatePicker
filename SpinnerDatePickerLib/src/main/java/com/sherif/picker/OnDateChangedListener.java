@@ -1,4 +1,4 @@
-package com.tsongkha.spinnerdatepicker;
+package com.sherif.picker;
 
 /**
  * Created by David on 25/11/2017.

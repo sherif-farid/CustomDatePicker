@@ -1,4 +1,4 @@
-package com.tsongkha.spinnerdatepickerexample;
+package com.sherif.pickerexample;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
@@ -43,15 +43,15 @@ public class MainActivityTest {
         onView(withId(R.id.set_date_button)).perform(click());
 
         //assert
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.datePickerContainer))
+        onView(withId(com.sherif.picker.R.id.datePickerContainer))
                 .check(matches(isCompletelyDisplayed()));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.parent))
+        onView(withId(com.sherif.picker.R.id.parent))
                 .check(matches(isCompletelyDisplayed()));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.year))
+        onView(withId(com.sherif.picker.R.id.year))
                 .check(NumberPickers.isDisplayed("1980"));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.month))
+        onView(withId(com.sherif.picker.R.id.month))
                 .check(NumberPickers.isDisplayed("Jan"));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.day))
+        onView(withId(com.sherif.picker.R.id.day))
                 .check(NumberPickers.isDisplayed("1"));
         onView(withClassName(containsString("DialogTitle"))).check(
                 matches(withText("January 1, 1980")));
@@ -152,15 +152,15 @@ public class MainActivityTest {
         });
 
         //assert
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.datePickerContainer))
+        onView(withId(com.sherif.picker.R.id.datePickerContainer))
                 .check(matches(isCompletelyDisplayed()));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.parent))
+        onView(withId(com.sherif.picker.R.id.parent))
                 .check(matches(isCompletelyDisplayed()));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.year))
+        onView(withId(com.sherif.picker.R.id.year))
                 .check(NumberPickers.isDisplayed("1970"));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.month))
+        onView(withId(com.sherif.picker.R.id.month))
                 .check(NumberPickers.isDisplayed("Dec"));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.day))
+        onView(withId(com.sherif.picker.R.id.day))
                 .check(NumberPickers.isDisplayed("31"));
         onView(withClassName(containsString("DialogTitle"))).check(
                 matches(withText("December 31, 1970")));
@@ -175,9 +175,9 @@ public class MainActivityTest {
             }
         });
 
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.month))
+        onView(withId(com.sherif.picker.R.id.month))
                 .perform(NumberPickers.scroll(SCROLL_DOWN));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.day))
+        onView(withId(com.sherif.picker.R.id.day))
                 .check(NumberPickers.isDisplayed("29"));
         onView(withClassName(containsString("DialogTitle"))).check(
                 matches(withText("February 29, 1980")));
@@ -192,9 +192,9 @@ public class MainActivityTest {
             }
         });
 
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.year))
+        onView(withId(com.sherif.picker.R.id.year))
                 .perform(NumberPickers.scroll(SCROLL_DOWN));
-        onView(withId(com.tsongkha.spinnerdatepicker.R.id.day))
+        onView(withId(com.sherif.picker.R.id.day))
                 .check(NumberPickers.isDisplayed("1"));
         onView(withClassName(containsString("DialogTitle"))).check(
                 matches(withText("March 1, 1981")));

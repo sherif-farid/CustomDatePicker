@@ -1,4 +1,4 @@
-package com.tsongkha.spinnerdatepicker;
+package com.sherif.picker;
 
 import android.widget.EditText;
 import android.widget.NumberPicker;

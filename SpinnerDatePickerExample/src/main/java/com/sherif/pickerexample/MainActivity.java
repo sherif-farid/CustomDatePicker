@@ -1,20 +1,14 @@
-package com.tsongkha.spinnerdatepickerexample;
+package com.sherif.pickerexample;
 
-import android.icu.text.SimpleDateFormat;
-import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.widget.Button;
-import android.widget.TextView;
-
-import com.tsongkha.spinnerdatepicker.MyDatePicker;
-import com.tsongkha.spinnerdatepicker.OnDateChangedListener;
-import com.tsongkha.spinnerdatepicker.Utils;
-import com.tsongkha.spinnerdatepickerexample.databinding.ActivityMainBinding;
+import com.sherif.picker.MyDatePicker;
+import com.sherif.picker.OnDateChangedListener;
+import com.sherif.pickerexample.databinding.ActivityMainBinding;
 
 /**
  * Created by rawsond on 25/08/17.

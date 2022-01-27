@@ -1,4 +1,4 @@
-package com.tsongkha.spinnerdatepicker;
+package com.sherif.picker;
 /* Fork of Oreo DatePickerSpinnerDelegate
  *
  * Original class is Copyright (C) 2016 The Android Open Source Project
@@ -35,7 +35,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.TextView;
@@ -44,7 +43,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.tsongkha.spinnerdatepicker.databinding.DatePickerContainerBinding;
+
+import com.sherif.picker.databinding.DatePickerContainerBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -102,7 +102,7 @@ public class MyDatePicker extends FrameLayout {
 
     public MyDatePicker(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.MyDatePicker);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs ,R.styleable.MyDatePicker);
         isIslamic = typedArray.getBoolean(R.styleable.MyDatePicker_isIslamic ,false);
         typedArray.recycle();
         Log.v(tag , "cons 2 isIslamic :"+isIslamic);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.tsongkha.spinnerdatepickerexample">
+          package="com.sherif.pickerexample">
 
     <application
         android:allowBackup="true"
@@ -10,7 +10,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:exported="true"
-            android:name="com.tsongkha.spinnerdatepickerexample.MainActivity"
+            android:name="com.sherif.pickerexample.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

@@ -14,7 +14,7 @@
         android:layout_margin="24dp"
         android:layout_gravity="center_horizontal"
         android:textSize="22sp"/>
-    <com.tsongkha.spinnerdatepicker.MyDatePicker
+    <com.sherif.picker.MyDatePicker
         android:id="@+id/datePickerFrame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textSize="22sp"/>
-    <com.tsongkha.spinnerdatepicker.MyDatePicker
+    <com.sherif.picker.MyDatePicker
         android:id="@+id/datePickerFrame2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
