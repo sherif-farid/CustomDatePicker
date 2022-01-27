@@ -23,11 +23,11 @@ android {
 }
 
 dependencies {
-    androidTestCompile 'androidx.test.espresso:espresso-core:3.1.1'
-    androidTestCompile 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
 
-    compile project(':SpinnerDatePickerLib')
-    compile 'androidx.appcompat:appcompat:1.0.0'
-    compile 'androidx.constraintlayout:constraintlayout:1.1.2'
-    compile 'com.google.android.material:material:1.0.0'
+    implementation project(':SpinnerDatePickerLib')
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
+    implementation 'com.google.android.material:material:1.0.0'
 }

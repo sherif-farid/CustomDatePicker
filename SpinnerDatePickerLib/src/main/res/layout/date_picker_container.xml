@@ -39,6 +39,38 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal">
-
+        <NumberPicker
+            android:id="@+id/mDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="1dip"
+            android:layout_marginRight="1dip"
+            android:layout_marginStart="1dip"
+            android:layout_marginEnd="1dip"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            />
+        <NumberPicker
+            android:id="@+id/mMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="1dip"
+            android:layout_marginRight="1dip"
+            android:layout_marginStart="1dip"
+            android:layout_marginEnd="1dip"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            />
+        <NumberPicker
+            android:id="@+id/mYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="1dip"
+            android:layout_marginRight="1dip"
+            android:layout_marginStart="1dip"
+            android:layout_marginEnd="1dip"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            />
     </LinearLayout>
 </LinearLayout>

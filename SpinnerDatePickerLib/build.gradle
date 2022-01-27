@@ -1,17 +1,12 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'com.github.drawers'
-version = '1.0.6'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 210
-        versionName "2.1.0"
+        targetSdkVersion 29
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,14 +22,16 @@ android {
         abortOnError false
     }
 
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
+//    testOptions {
+//        unitTests.returnDefaultValues = true
+//    }
+    buildFeatures.viewBinding = true
+
 }
 
 
 dependencies {
-    compile 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
 }
 
 task sourcesJar(type: Jar) {
@@ -47,7 +44,7 @@ task javadoc(type: Javadoc) {
     failOnError false
     source = android.sourceSets.main.java.sourceFiles
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
+    classpath += configurations.implementation
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

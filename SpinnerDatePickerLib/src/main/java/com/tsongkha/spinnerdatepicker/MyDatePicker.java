@@ -43,6 +43,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.tsongkha.spinnerdatepicker.databinding.DatePickerContainerBinding;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Locale;
@@ -96,6 +98,8 @@ public class MyDatePicker extends FrameLayout {
 
     private String tag = "DatePickerTag";
 
+    private DatePickerContainerBinding binding ;
+
     public MyDatePicker(@NonNull Context context) {
         super(context);
         initConstructor(context , 0);
@@ -129,11 +133,12 @@ public class MyDatePicker extends FrameLayout {
 
         // initialization based on locale
         setCurrentLocale(Locale.getDefault());
-
         LayoutInflater inflater = (LayoutInflater) new ContextThemeWrapper(
                 mContext,
                 numberPickerStyle).getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
+        binding = DatePickerContainerBinding.inflate(inflater , this , false);
+
         inflater.inflate(R.layout.date_picker_container, this, true);
 
         mPickerContainer = findViewById(R.id.parent);
