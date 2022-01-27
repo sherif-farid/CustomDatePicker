@@ -17,17 +17,16 @@ import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class Utils {
-    public static boolean  isIslamic = true ;
-    public static ULocale getULocale(){
+    public static ULocale getULocale(boolean isIslamic ){
         if (isIslamic)
         return new ULocale("ar", "eg", "@calendar=islamic-umalqura");
         else
         return new ULocale("ar");
     }
-    public static SimpleDateFormat getSimpleDateFormat(){
-        return new SimpleDateFormat("dd MMM yyyy",getULocale());
+    public static SimpleDateFormat getSimpleDateFormat(boolean isIslamic ){
+        return new SimpleDateFormat("dd MMM yyyy",getULocale(isIslamic));
     }
-    public static Calendar getCalendar(int year, int monthOfYear , int dayOfMonth){
+    public static Calendar getCalendar(int year, int monthOfYear , int dayOfMonth , boolean isIslamic ){
         if (isIslamic) {
             IslamicCalendar calendar = new IslamicCalendar(year, monthOfYear, dayOfMonth);
             calendar.setCalculationType(IslamicCalendar.CalculationType.ISLAMIC_UMALQURA);
@@ -38,7 +37,7 @@ public class Utils {
             return calendar ;
         }
     }
-    public static Calendar getCalendar(){
+    public static Calendar getCalendar(boolean isIslamic ){
         if (isIslamic) {
             IslamicCalendar calendar = new IslamicCalendar();
             calendar.setCalculationType(IslamicCalendar.CalculationType.ISLAMIC_UMALQURA);

@@ -18,6 +18,7 @@ package com.tsongkha.spinnerdatepicker;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Parcel;
@@ -61,14 +62,6 @@ public class MyDatePicker extends FrameLayout {
 
     private static final boolean DEFAULT_ENABLED_STATE = true;
 
-    private LinearLayout mPickerContainer;
-
-    private NumberPicker mDaySpinner;
-
-    private NumberPicker mMonthSpinner;
-
-    private NumberPicker mYearSpinner;
-
     private EditText mDaySpinnerInput;
 
     private EditText mMonthSpinnerInput;
@@ -97,22 +90,31 @@ public class MyDatePicker extends FrameLayout {
     private boolean mIsDayShown = true;
 
     private String tag = "DatePickerTag";
+    private boolean isIslamic = false ;
 
     private DatePickerContainerBinding binding ;
 
     public MyDatePicker(@NonNull Context context) {
         super(context);
+        Log.v(tag , "cons 1");
         initConstructor(context , 0);
     }
 
     public MyDatePicker(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.MyDatePicker);
+        isIslamic = typedArray.getBoolean(R.styleable.MyDatePicker_isIslamic ,false);
+        typedArray.recycle();
+        Log.v(tag , "cons 2 isIslamic :"+isIslamic);
         initConstructor(context , 0);
 
     }
 
-    public MyDatePicker(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public MyDatePicker(@NonNull Context context,
+                        @Nullable AttributeSet attrs,
+                        int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        Log.v(tag , "cons 3");
         initConstructor(context , 0);
     }
 
@@ -121,100 +123,108 @@ public class MyDatePicker extends FrameLayout {
                         int defStyleAttr,
                         int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        Log.v(tag , "cons 4");
         initConstructor(context , 0);
     }
     MyDatePicker(Context context, int numberPickerStyle) {
         super(context);
+        Log.v(tag , "cons 5");
         initConstructor(context, numberPickerStyle);
     }
+    private void initBasicData(){
+        mIsDayShown = true;
+        if (isIslamic) {
+            Calendar minDate = Utils.getCalendar(1300, 0, 1 ,isIslamic);
 
+            Calendar maxDate = Utils.getCalendar(1500, 0, 1,isIslamic);
+
+            setMinDate(minDate.getTimeInMillis());
+            setMaxDate(maxDate.getTimeInMillis());
+            setDate(1443, 0, 1);
+            updateSpinners();
+        }else {
+
+            Calendar minDate = Utils.getCalendar(1900, 0, 1,isIslamic);
+
+            Calendar maxDate = Utils.getCalendar(2100, 0, 1,isIslamic);
+
+            setMinDate(minDate.getTimeInMillis());
+            setMaxDate(maxDate.getTimeInMillis());
+            setDate(2022, 0, 1);
+
+            updateSpinners();
+        }
+    }
     private void initConstructor(Context context, int numberPickerStyle){
         mContext = context;
-
         // initialization based on locale
+//        LayoutInflater inflater2 = LayoutInflater.from(context);
         setCurrentLocale(Locale.getDefault());
         LayoutInflater inflater = (LayoutInflater) new ContextThemeWrapper(
                 mContext,
                 numberPickerStyle).getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
-        binding = DatePickerContainerBinding.inflate(inflater , this , false);
+        binding = DatePickerContainerBinding.inflate(inflater , this , true);
 
-        inflater.inflate(R.layout.date_picker_container, this, true);
+//        inflater.inflate(R.layout.date_picker_container, this, true);
 
-        mPickerContainer = findViewById(R.id.parent);
+//        mPickerContainer = findViewById(R.id.parent);
 
-        OnValueChangeListener onChangeListener = new OnValueChangeListener() {
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                updateInputState();
-                mTempDate.setTimeInMillis(mCurrentDate.getTimeInMillis());
-                // take care of wrapping of days and months to update greater fields
-                if (picker == mDaySpinner) {
-                    int maxDayOfMonth = mTempDate.getActualMaximum(Calendar.DAY_OF_MONTH);
-                    if (oldVal == maxDayOfMonth && newVal == 1) {
-                        mTempDate.add(Calendar.DAY_OF_MONTH, 1);
-                    } else if (oldVal == 1 && newVal == maxDayOfMonth) {
-                        mTempDate.add(Calendar.DAY_OF_MONTH, -1);
-                    } else {
-                        mTempDate.add(Calendar.DAY_OF_MONTH, newVal - oldVal);
-                    }
+        OnValueChangeListener onChangeListener = (picker, oldVal, newVal) -> {
+            updateInputState();
+            mTempDate.setTimeInMillis(mCurrentDate.getTimeInMillis());
+            // take care of wrapping of days and months to update greater fields
+            if (picker == binding.mDay) {
+                int maxDayOfMonth = mTempDate.getActualMaximum(Calendar.DAY_OF_MONTH);
+                if (oldVal == maxDayOfMonth && newVal == 1) {
+                    mTempDate.add(Calendar.DAY_OF_MONTH, 1);
+                } else if (oldVal == 1 && newVal == maxDayOfMonth) {
+                    mTempDate.add(Calendar.DAY_OF_MONTH, -1);
+                } else {
+                    mTempDate.add(Calendar.DAY_OF_MONTH, newVal - oldVal);
                 }
-                else if (picker == mMonthSpinner) {
-                    if (oldVal == 11 && newVal == 0) {
-                        mTempDate.add(Calendar.MONTH, 1);
-                    } else if (oldVal == 0 && newVal == 11) {
-                        mTempDate.add(Calendar.MONTH, -1);
-                    } else {
-                        mTempDate.add(Calendar.MONTH, newVal - oldVal);
-                    }
-                }
-                else if (picker == mYearSpinner) {
-                    mTempDate.set(Calendar.YEAR, newVal);
-                }
-                else {
-                    throw new IllegalArgumentException();
-                }
-                // now set the date to the adjusted one
-                setDate(mTempDate.get(Calendar.YEAR), mTempDate.get(Calendar.MONTH),
-                        mTempDate.get(Calendar.DAY_OF_MONTH));
-                updateSpinners();
-                notifyDateChanged();
             }
+            else if (picker == binding.mMonth) {
+                if (oldVal == 11 && newVal == 0) {
+                    mTempDate.add(Calendar.MONTH, 1);
+                } else if (oldVal == 0 && newVal == 11) {
+                    mTempDate.add(Calendar.MONTH, -1);
+                } else {
+                    mTempDate.add(Calendar.MONTH, newVal - oldVal);
+                }
+            }
+            else if (picker == binding.mYear) {
+                mTempDate.set(Calendar.YEAR, newVal);
+            }
+            else {
+                throw new IllegalArgumentException();
+            }
+            // now set the date to the adjusted one
+            setDate(mTempDate.get(Calendar.YEAR), mTempDate.get(Calendar.MONTH),
+                    mTempDate.get(Calendar.DAY_OF_MONTH));
+            updateSpinners();
+            notifyDateChanged();
         };
 
-        // day
-        mDaySpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_day_month,
-                mPickerContainer, false);
-        mDaySpinner.setId(R.id.day);
-        mDaySpinner.setFormatter(new TwoDigitFormatter());
-        mDaySpinner.setOnLongPressUpdateInterval(100);
-        mDaySpinner.setOnValueChangedListener(onChangeListener);
-        mDaySpinnerInput = NumberPickers.findEditText(mDaySpinner);
+        binding.mDay.setFormatter(new TwoDigitFormatter());
+        binding.mDay.setOnLongPressUpdateInterval(100);
+        binding.mDay.setOnValueChangedListener(onChangeListener);
+        mDaySpinnerInput = NumberPickers.findEditText(binding.mDay);
 
 
-        // month
-        mMonthSpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_day_month,
-                mPickerContainer, false);
-        mMonthSpinner.setId(R.id.month);
-        mMonthSpinner.setMinValue(0);
-        mMonthSpinner.setMaxValue(mNumberOfMonths - 1);
-        mMonthSpinner.setDisplayedValues(mShortMonths);
-        mMonthSpinner.setOnLongPressUpdateInterval(200);
-        mMonthSpinner.setOnValueChangedListener(onChangeListener);
-        mMonthSpinnerInput = NumberPickers.findEditText(mMonthSpinner);
+        binding.mMonth.setMinValue(0);
+        binding.mMonth.setMaxValue(mNumberOfMonths - 1);
+        binding.mMonth.setDisplayedValues(mShortMonths);
+        binding.mMonth.setOnLongPressUpdateInterval(200);
+        binding.mMonth.setOnValueChangedListener(onChangeListener);
+        mMonthSpinnerInput = NumberPickers.findEditText(binding.mMonth);
 
-        // year
-        mYearSpinner = (NumberPicker) inflater.inflate(R.layout.number_picker_year,
-                mPickerContainer, false);
-        mYearSpinner.setId(R.id.year);
-        mYearSpinner.setOnLongPressUpdateInterval(100);
-        mYearSpinner.setOnValueChangedListener(onChangeListener);
-        mYearSpinnerInput = NumberPickers.findEditText(mYearSpinner);
+        binding.mYear.setOnLongPressUpdateInterval(100);
+        binding.mYear.setOnValueChangedListener(onChangeListener);
+        mYearSpinnerInput = NumberPickers.findEditText(binding.mYear);
 
         // initialize to current date
         mCurrentDate.setTimeInMillis(System.currentTimeMillis());
-
-        // re-order the number spinners to match the current date format
-        reorderSpinners();
 
         // If not explicitly specified this view is important for accessibility.
         if (getImportantForAccessibility() == View.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
@@ -222,13 +232,10 @@ public class MyDatePicker extends FrameLayout {
         }
 
 //        root.addView(this);
+        initBasicData();
     }
 
-    public void init(int year, int monthOfYear, int dayOfMonth,
-              boolean isDayShown, OnDateChangedListener onDateChangedListener) {
-        mIsDayShown = isDayShown;
-        setDate(year, monthOfYear, dayOfMonth);
-        updateSpinners();
+    public void init( OnDateChangedListener onDateChangedListener) {
         mOnDateChangedListener = onDateChangedListener;
         notifyDateChanged();
     }
@@ -284,9 +291,9 @@ public class MyDatePicker extends FrameLayout {
 
     @Override
     public void setEnabled(boolean enabled) {
-        mDaySpinner.setEnabled(enabled);
-        mMonthSpinner.setEnabled(enabled);
-        mYearSpinner.setEnabled(enabled);
+        binding.mDay.setEnabled(enabled);
+        binding.mMonth.setEnabled(enabled);
+        binding.mYear.setEnabled(enabled);
         mIsEnabled = enabled;
     }
 
@@ -319,7 +326,7 @@ public class MyDatePicker extends FrameLayout {
 
         mNumberOfMonths = mTempDate.getActualMaximum(Calendar.MONTH) + 1;
         mShortMonths = /*new DateFormatSymbols().getShortMonths();*/
-        Utils.getSimpleDateFormat().getDateFormatSymbols().getShortMonths();
+        Utils.getSimpleDateFormat(isIslamic).getDateFormatSymbols().getShortMonths();
 
         if (usingNumericMonths()) {
             // We're in a locale where a date should either be all-numeric, or all-text.
@@ -347,53 +354,14 @@ public class MyDatePicker extends FrameLayout {
      */
     private Calendar getCalendarForLocale(Calendar oldCalendar, Locale locale) {
         if (oldCalendar == null) {
-            return Utils.getCalendar();
+            return Utils.getCalendar(isIslamic);
         } else {
             final long currentTimeMillis = oldCalendar.getTimeInMillis();
-            Calendar newCalendar = Utils.getCalendar();
+            Calendar newCalendar = Utils.getCalendar(isIslamic);
             newCalendar.setTimeInMillis(currentTimeMillis);
             return newCalendar;
         }
     }
-
-    /**
-     * Reorders the spinners according to the date format that is
-     * explicitly set by the user and if no such is set fall back
-     * to the current locale's default format.
-     */
-    private void reorderSpinners() {
-        mPickerContainer.removeAllViews();
-        // We use numeric spinners for year and day, but textual months. Ask icu4c what
-        // order the user's locale uses for that combination. http://b/7207103.
-        String pattern = null;
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            pattern = getOrderJellyBeanMr2();
-        } else {
-
-            pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "yyyyMMMdd");
-        }
-        char[] order = ICU.getDateFormatOrder(pattern);
-        final int spinnerCount = order.length;
-        for (int i = 0; i < spinnerCount; i++) {
-            switch (order[i]) {
-                case 'd':
-                    mPickerContainer.addView(mDaySpinner);
-                    setImeOptions(mDaySpinner, spinnerCount, i);
-                    break;
-                case 'M':
-                    mPickerContainer.addView(mMonthSpinner);
-                    setImeOptions(mMonthSpinner, spinnerCount, i);
-                    break;
-                case 'y':
-                    mPickerContainer.addView(mYearSpinner);
-                    setImeOptions(mYearSpinner, spinnerCount, i);
-                    break;
-                default:
-                    throw new IllegalArgumentException(Arrays.toString(order));
-            }
-        }
-    }
-
 
     //see http://androidxref.com/4.1.1/xref/packages/apps/Contacts/src/com/android/contacts/datepicker/DatePicker.java
     private String getOrderJellyBeanMr2() {
@@ -431,53 +399,53 @@ public class MyDatePicker extends FrameLayout {
 
     private void updateSpinners() {
         // set the spinner ranges respecting the min and max dates
-        mDaySpinner.setVisibility(mIsDayShown ? View.VISIBLE : View.GONE);
+        binding.mDay.setVisibility(mIsDayShown ? View.VISIBLE : View.GONE);
         if (mCurrentDate.equals(mMinDate)) {
-            mDaySpinner.setMinValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
-            mDaySpinner.setMaxValue(mCurrentDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-            mDaySpinner.setWrapSelectorWheel(false);
-            mMonthSpinner.setDisplayedValues(null);
-            mMonthSpinner.setMinValue(mCurrentDate.get(Calendar.MONTH));
-            mMonthSpinner.setMaxValue(mCurrentDate.getActualMaximum(Calendar.MONTH));
-            mMonthSpinner.setWrapSelectorWheel(false);
+            binding.mDay.setMinValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
+            binding.mDay.setMaxValue(mCurrentDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+            binding.mDay.setWrapSelectorWheel(false);
+            binding.mMonth.setDisplayedValues(null);
+            binding.mMonth.setMinValue(mCurrentDate.get(Calendar.MONTH));
+            binding.mMonth.setMaxValue(mCurrentDate.getActualMaximum(Calendar.MONTH));
+            binding.mMonth.setWrapSelectorWheel(false);
         } else if (mCurrentDate.equals(mMaxDate)) {
-            mDaySpinner.setMinValue(mCurrentDate.getActualMinimum(Calendar.DAY_OF_MONTH));
-            mDaySpinner.setMaxValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
-            mDaySpinner.setWrapSelectorWheel(false);
-            mMonthSpinner.setDisplayedValues(null);
-            mMonthSpinner.setMinValue(mCurrentDate.getActualMinimum(Calendar.MONTH));
-            mMonthSpinner.setMaxValue(mCurrentDate.get(Calendar.MONTH));
-            mMonthSpinner.setWrapSelectorWheel(false);
+            binding.mDay.setMinValue(mCurrentDate.getActualMinimum(Calendar.DAY_OF_MONTH));
+            binding.mDay.setMaxValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
+            binding.mDay.setWrapSelectorWheel(false);
+            binding.mMonth.setDisplayedValues(null);
+            binding.mMonth.setMinValue(mCurrentDate.getActualMinimum(Calendar.MONTH));
+            binding.mMonth.setMaxValue(mCurrentDate.get(Calendar.MONTH));
+            binding.mMonth.setWrapSelectorWheel(false);
         } else {
-            mDaySpinner.setMinValue(1);
-            mDaySpinner.setMaxValue(mCurrentDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-            mDaySpinner.setWrapSelectorWheel(true);
-            mMonthSpinner.setDisplayedValues(null);
-            mMonthSpinner.setMinValue(0);
-            mMonthSpinner.setMaxValue(11);
-            mMonthSpinner.setWrapSelectorWheel(true);
+            binding.mDay.setMinValue(1);
+            binding.mDay.setMaxValue(mCurrentDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+            binding.mDay.setWrapSelectorWheel(true);
+            binding.mMonth.setDisplayedValues(null);
+            binding.mMonth.setMinValue(0);
+            binding.mMonth.setMaxValue(11);
+            binding.mMonth.setWrapSelectorWheel(true);
         }
 
         // make sure the month names are a zero based array
         // with the months in the month spinner
         String[] displayedValues = Arrays.copyOfRange(mShortMonths,
-                                                      mMonthSpinner.getMinValue(),
-                                                      mMonthSpinner.getMaxValue() + 1);
+                binding.mMonth.getMinValue(),
+                binding.mMonth.getMaxValue() + 1);
         for (String displayedValue : displayedValues) {
             Log.v(tag , "displayedValues :"+displayedValue);
         }
 
-        mMonthSpinner.setDisplayedValues(displayedValues);
+        binding.mMonth.setDisplayedValues(displayedValues);
 
         // year spinner range does not change based on the current date
-        mYearSpinner.setMinValue(mMinDate.get(Calendar.YEAR));
-        mYearSpinner.setMaxValue(mMaxDate.get(Calendar.YEAR));
-        mYearSpinner.setWrapSelectorWheel(false);
+        binding.mYear.setMinValue(mMinDate.get(Calendar.YEAR));
+        binding.mYear.setMaxValue(mMaxDate.get(Calendar.YEAR));
+        binding.mYear.setWrapSelectorWheel(false);
 
         // set the spinner values
-        mYearSpinner.setValue(mCurrentDate.get(Calendar.YEAR));
-        mMonthSpinner.setValue(mCurrentDate.get(Calendar.MONTH));
-        mDaySpinner.setValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
+        binding.mYear.setValue(mCurrentDate.get(Calendar.YEAR));
+        binding.mMonth.setValue(mCurrentDate.get(Calendar.MONTH));
+        binding.mDay.setValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
 
         if (usingNumericMonths()) {
             mMonthSpinnerInput.setRawInputType(InputType.TYPE_CLASS_NUMBER);
@@ -491,8 +459,34 @@ public class MyDatePicker extends FrameLayout {
     private void notifyDateChanged() {
         sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
         if (mOnDateChangedListener != null) {
-            mOnDateChangedListener.onDateChanged(this, getYear(), getMonth(),
-                                                 getDayOfMonth());
+            int year =  getYear();
+            int monthOfYear = getMonth() ;
+            int dayOfMonth = getDayOfMonth() ;
+            String georgian ;
+            String islamic ;
+            if (isIslamic) {
+                Calendar islamicCal = Utils.getIslamicOnly(year, monthOfYear, dayOfMonth);
+                Calendar greCal = Calendar.getInstance();
+                greCal.setTimeInMillis(islamicCal.getTimeInMillis());
+
+                georgian = Utils.getSdfGeorgianOnly().format(greCal);
+                islamic = Utils.getSdfIslamicOnly().format(islamicCal);
+            }else {
+
+                Calendar greCal = Utils.getGeorgianOnly(year, monthOfYear, dayOfMonth);
+                Calendar islamicCal = Utils.getIslamicOnly(year, monthOfYear, dayOfMonth);
+                islamicCal.setTimeInMillis(greCal.getTimeInMillis());
+
+                georgian = Utils.getSdfGeorgianOnly().format(greCal);
+                islamic = Utils.getSdfIslamicOnly().format(islamicCal);
+            }
+            mOnDateChangedListener.onDateChanged(this,
+                   year,
+                    monthOfYear,
+                     dayOfMonth,
+                    isIslamic ,
+                    georgian,
+                    islamic);
         }
     }
 
@@ -547,11 +541,11 @@ public class MyDatePicker extends FrameLayout {
     protected void onRestoreInstanceState(Parcelable state) {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
-        mCurrentDate = Utils.getCalendar();
+        mCurrentDate = Utils.getCalendar(isIslamic);
         mCurrentDate.setTimeInMillis(ss.currentDate);
-        mMinDate = Utils.getCalendar();
+        mMinDate = Utils.getCalendar(isIslamic);
         mMinDate.setTimeInMillis(ss.minDate);
-        mMaxDate = Utils.getCalendar();
+        mMaxDate = Utils.getCalendar(isIslamic);
         mMaxDate.setTimeInMillis(ss.maxDate);
         updateSpinners();
     }

@@ -25,9 +25,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:layout_marginStart="12dp"
-    android:layout_marginEnd="12dp"
-    android:background="#C5CAC6"
     android:minHeight="100dp"
     android:orientation="vertical">
 
@@ -35,13 +32,14 @@
          on the date format selected by the user. -->
     <LinearLayout
         android:id="@+id/parent"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal">
         <NumberPicker
             android:id="@+id/mDay"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginLeft="1dip"
             android:layout_marginRight="1dip"
@@ -53,6 +51,7 @@
         <NumberPicker
             android:id="@+id/mMonth"
             android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginLeft="1dip"
             android:layout_marginRight="1dip"
@@ -63,7 +62,8 @@
             />
         <NumberPicker
             android:id="@+id/mYear"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginLeft="1dip"
             android:layout_marginRight="1dip"
