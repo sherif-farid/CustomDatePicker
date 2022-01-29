@@ -1,7 +1,10 @@
 package com.sherif.pickerexample;
 
+import android.icu.util.IslamicCalendar;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,8 +17,8 @@ import com.sherif.pickerexample.databinding.ActivityMainBinding;
  * Created by rawsond on 25/08/17.
  */
 
-@RequiresApi(api = Build.VERSION_CODES.N)
-public class MainActivity extends AppCompatActivity implements OnDateChangedListener {
+public class MainActivity extends AppCompatActivity implements
+        OnDateChangedListener{
     private String tag = "MainActivityTag";
 
     private ActivityMainBinding binding ;
@@ -24,8 +27,12 @@ public class MainActivity extends AppCompatActivity implements OnDateChangedList
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.datePickerFrame.init(this);
-        binding.datePickerFrame2.init(this);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            binding.datePickerFrame.init(this);
+//            binding.datePickerFrame2.init(this);
+//        }
+        binding.datePickerFrame.initBeforeApi24(this, "ar");
+        binding.datePickerFrame2.initBeforeApi24(this, "ar");
     }
 
     @Override

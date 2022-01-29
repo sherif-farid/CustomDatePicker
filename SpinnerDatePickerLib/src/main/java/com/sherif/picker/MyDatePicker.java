@@ -70,6 +70,7 @@ public class MyDatePicker extends FrameLayout {
 
     private Context mContext;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private OnDateChangedListener mOnDateChangedListener;
 
     private String[] mShortMonths;
@@ -93,6 +94,8 @@ public class MyDatePicker extends FrameLayout {
     private boolean isIslamic = false ;
 
     private DatePickerContainerBinding binding ;
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private String lang = "ar";
 
     public MyDatePicker(@NonNull Context context) {
         super(context);
@@ -106,15 +109,15 @@ public class MyDatePicker extends FrameLayout {
         isIslamic = typedArray.getBoolean(R.styleable.MyDatePicker_isIslamic ,false);
         typedArray.recycle();
         Log.v(tag , "cons 2 isIslamic :"+isIslamic);
-        initConstructor(context , 0);
-
+        initConstructor(context ,attrs != null? attrs.getStyleAttribute():0);
     }
 
     public MyDatePicker(@NonNull Context context,
                         @Nullable AttributeSet attrs,
                         int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        Log.v(tag , "cons 3");
+        Log.v(tag , "cons 3 defStyleAttr "+defStyleAttr);
+
         initConstructor(context , 0);
     }
 
@@ -123,7 +126,7 @@ public class MyDatePicker extends FrameLayout {
                         int defStyleAttr,
                         int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        Log.v(tag , "cons 4");
+        Log.v(tag , "cons 4 defStyleAttr "+defStyleAttr+" defStyleRes "+defStyleRes);
         initConstructor(context , 0);
     }
     MyDatePicker(Context context, int numberPickerStyle) {
@@ -235,9 +238,19 @@ public class MyDatePicker extends FrameLayout {
         initBasicData();
     }
 
-    public void init( OnDateChangedListener onDateChangedListener) {
+    public void init( OnDateChangedListener onDateChangedListener , String lang) {
+        mOnDateChangedListener = onDateChangedListener;
+        this.lang = lang ;
+        notifyDateChanged();
+    }
+    public void init( OnDateChangedListener onDateChangedListener ) {
         mOnDateChangedListener = onDateChangedListener;
         notifyDateChanged();
+    }
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void initBeforeApi24( OnDateChangedListener onDateChangedListener  , String lang) {
+        mOnDateChangedListener = onDateChangedListener;
+        this.lang = lang ;
     }
 
     void updateDate(int year, int month, int dayOfMonth) {
@@ -326,7 +339,7 @@ public class MyDatePicker extends FrameLayout {
 
         mNumberOfMonths = mTempDate.getActualMaximum(Calendar.MONTH) + 1;
         mShortMonths = /*new DateFormatSymbols().getShortMonths();*/
-        Utils.getSimpleDateFormat(isIslamic).getDateFormatSymbols().getShortMonths();
+                Utils.getSimpleDateFormat(isIslamic,locale.getLanguage()).getDateFormatSymbols().getMonths();
 
         if (usingNumericMonths()) {
             // We're in a locale where a date should either be all-numeric, or all-text.
@@ -363,24 +376,6 @@ public class MyDatePicker extends FrameLayout {
         }
     }
 
-    //see http://androidxref.com/4.1.1/xref/packages/apps/Contacts/src/com/android/contacts/datepicker/DatePicker.java
-    private String getOrderJellyBeanMr2() {
-        java.text.DateFormat format;
-        String order;
-        if (mShortMonths[0].startsWith("1")) {
-            format = DateFormat.getDateFormat(getContext());
-        } else {
-            format = DateFormat.getMediumDateFormat(getContext());
-        }
-
-        if (format instanceof SimpleDateFormat) {
-            order = ((SimpleDateFormat) format).toPattern();
-        } else {
-            // Shouldn't happen, but just in case.
-            order = new String(DateFormat.getDateFormatOrder(getContext()));
-        }
-        return order;
-    }
 
     private boolean isNewDate(int year, int month, int dayOfMonth) {
         return (mCurrentDate.get(Calendar.YEAR) != year
@@ -432,7 +427,7 @@ public class MyDatePicker extends FrameLayout {
                 binding.mMonth.getMinValue(),
                 binding.mMonth.getMaxValue() + 1);
         for (String displayedValue : displayedValues) {
-            Log.v(tag , "displayedValues :"+displayedValue);
+//            Log.v(tag , "displayedValues :"+displayedValue);
         }
 
         binding.mMonth.setDisplayedValues(displayedValues);
@@ -469,21 +464,21 @@ public class MyDatePicker extends FrameLayout {
                 Calendar greCal = Calendar.getInstance();
                 greCal.setTimeInMillis(islamicCal.getTimeInMillis());
 
-                georgian = Utils.getSdfGeorgianOnly().format(greCal);
-                islamic = Utils.getSdfIslamicOnly().format(islamicCal);
+                georgian = Utils.getSimpleDateFormat(false , lang).format(greCal);
+                islamic = Utils.getSimpleDateFormat(true , lang).format(islamicCal);
             }else {
 
                 Calendar greCal = Utils.getGeorgianOnly(year, monthOfYear, dayOfMonth);
                 Calendar islamicCal = Utils.getIslamicOnly(year, monthOfYear, dayOfMonth);
                 islamicCal.setTimeInMillis(greCal.getTimeInMillis());
 
-                georgian = Utils.getSdfGeorgianOnly().format(greCal);
-                islamic = Utils.getSdfIslamicOnly().format(islamicCal);
+                georgian = Utils.getSimpleDateFormat(false , lang).format(greCal);
+                islamic = Utils.getSimpleDateFormat(true , lang).format(islamicCal);
             }
             mOnDateChangedListener.onDateChanged(this,
-                   year,
+                    year,
                     monthOfYear,
-                     dayOfMonth,
+                    dayOfMonth,
                     isIslamic ,
                     georgian,
                     islamic);

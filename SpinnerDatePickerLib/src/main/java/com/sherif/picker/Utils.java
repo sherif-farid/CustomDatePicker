@@ -17,14 +17,14 @@ import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class Utils {
-    public static ULocale getULocale(boolean isIslamic ){
+    public static ULocale getULocale(boolean isIslamic ,String lang){
         if (isIslamic)
-        return new ULocale("ar", "eg", "@calendar=islamic-umalqura");
+            return new ULocale(lang, "eg", "@calendar=islamic-umalqura");
         else
-        return new ULocale("ar");
+            return new ULocale(lang);
     }
-    public static SimpleDateFormat getSimpleDateFormat(boolean isIslamic ){
-        return new SimpleDateFormat("dd MMM yyyy",getULocale(isIslamic));
+    public static SimpleDateFormat getSimpleDateFormat(boolean isIslamic ,String lang){
+        return new SimpleDateFormat("dd MMM yyyy",getULocale(isIslamic ,lang));
     }
     public static Calendar getCalendar(int year, int monthOfYear , int dayOfMonth , boolean isIslamic ){
         if (isIslamic) {
@@ -56,13 +56,4 @@ public class Utils {
         calendar.set(year ,monthOfYear , dayOfMonth);
         return calendar ;
     }
-    public static SimpleDateFormat getSdfIslamicOnly(){
-        return new SimpleDateFormat("dd MMM yyyy",
-                new ULocale("ar", "eg", "@calendar=islamic-umalqura"));
-    }
-    public static SimpleDateFormat getSdfGeorgianOnly(){
-        return new SimpleDateFormat("dd MMM yyyy",
-                new ULocale("ar"));
-    }
-
 }
