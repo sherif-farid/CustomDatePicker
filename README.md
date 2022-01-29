@@ -12,21 +12,25 @@ usage :
 
 Add it in your root build.gradle at the end of repositories:
 
-
+```
 allprojects {
 		repositories {
 			...
 			maven { url 'https://jitpack.io' }
 		}
 	}
+	```
 
 Add the dependency
-
+```
 dependencies {
 	        implementation 'com.github.sherif-farid:CustomDatePicker:Tag'
 	}
+```
 
 in xml (fragment - activity - dialog)
+
+```
  <com.sherif.picker.MyDatePicker
         android:id="@+id/datePickerFrame"
         android:layout_width="match_parent"
@@ -36,13 +40,13 @@ in xml (fragment - activity - dialog)
         android:calendarViewShown="false"
         style="@style/DialogPickerStyle"
         app:isIslamic="false"/>	// or true to show islamic or gregorian calendar
-
+```
 in onCreate
-
+```
 binding.datePickerFrame.initBeforeApi24(this, "ar");
-
+```
 also override this call back to listen to changes
-
+```
  @Override
     public void onDateChanged(MyDatePicker view, int year,
                               int monthOfYear, int dayOfMonth ,
@@ -55,4 +59,4 @@ also override this call back to listen to changes
             binding.dateTv2.setText(allText);
         }
     }
-
+```
