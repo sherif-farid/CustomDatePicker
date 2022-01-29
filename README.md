@@ -19,9 +19,11 @@ allprojects {
 			maven { url 'https://jitpack.io' }
 		}
 	}
-	```
+	
+```
 
 Add the dependency
+
 ```
 dependencies {
 	        implementation 'com.github.sherif-farid:CustomDatePicker:Tag'
@@ -42,10 +44,12 @@ in xml (fragment - activity - dialog)
         app:isIslamic="false"/>	// or true to show islamic or gregorian calendar
 ```
 in onCreate
+
 ```
 binding.datePickerFrame.initBeforeApi24(this, "ar");
 ```
 also override this call back to listen to changes
+
 ```
  @Override
     public void onDateChanged(MyDatePicker view, int year,
