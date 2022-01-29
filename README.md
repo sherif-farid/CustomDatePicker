@@ -7,6 +7,8 @@ base code forked from https://github.com/drawers/SpinnerDatePicker
 - add support for hijri calendar
 
 usage :
+[![](https://jitpack.io/v/sherif-farid/CustomDatePicker.svg)](https://jitpack.io/#sherif-farid/CustomDatePicker)
+
 
 Add it in your root build.gradle at the end of repositories:
 
